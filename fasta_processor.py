@@ -1,5 +1,6 @@
 __author__ = 'DCotter'
 import re
+import math
 class FastProcessor:
     """Load the specified FASTA file for processing for processing
     """
@@ -11,7 +12,7 @@ class FastProcessor:
 
     def read_fasta_file(self, filename):
         """ Load the specified FASTA file for processing
-        :param filename: The filename of the FASTA file - can be a filename or a reletive or absolute path
+        :param filename: The filename of the FASTA file - can be a filename or a relative or absolute path
         """
         with open(filename) as f:
            for line in [line.rstrip('\n') for line in open(filename)]:
@@ -90,12 +91,13 @@ class FastProcessor:
     def repeats(self, sequence, length):
         """ Returns a dict of all sequences of the specified length with their repeat count. A repeat count of 2 means the sequence appears twice in total
         We do not return repeat counts of 1 as that is noisy and assumed for all sequences. Overlapping repeats are included
-        e.g. searchig for repeats of length 2 in 'aaaa' yields {'aa': 3}
+        e.g. searching for repeats of length 2 in 'aaaa' yields {'aa': 3}
         :returns a dict of sequences with their repeat counts
         """
         repeats = {}
         if not sequence:
             return repeats
+        complete = 0
         for i in range(0, len(sequence) - (length - 1)):
             substring = sequence[i:i+length]
             if not substring in repeats:
@@ -105,6 +107,9 @@ class FastProcessor:
                         count += 1
                 if count > 1:
                     repeats[substring] = count
+                if (i > 0 and int(i/len(sequence)*100) > complete + 10):
+                    complete = int(i/len(sequence)*100)
+                    print ("{}% complete\r".format(complete))
         return repeats
 
 
