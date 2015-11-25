@@ -80,7 +80,7 @@ class FastProcessor:
             return orfs
         start_index = -1
         for i in range(frame_offset, len(sequence), 3):
-            if sequence[i:i + 3] in self.start_codons:
+            if start_index == -1 and sequence[i:i + 3] in self.start_codons:
                start_index = i
             if sequence[i:i + 3] in self.stop_codons and start_index > -1:
                 orfs.append(sequence[start_index: i + 3])
@@ -97,19 +97,26 @@ class FastProcessor:
         repeats = {}
         if not sequence:
             return repeats
-        complete = 0
+
         for i in range(0, len(sequence) - (length - 1)):
             substring = sequence[i:i+length]
             if not substring in repeats:
-                count = 1
-                for j in range(i + 1, len(sequence) - (length - 1)):
-                    if sequence[j:j+length] == substring:
-                        count += 1
-                if count > 1:
-                    repeats[substring] = count
-                if (i > 0 and int(i/len(sequence)*100) > complete + 10):
-                    complete = int(i/len(sequence)*100)
-                    print ("{}% complete\r".format(complete))
+                j = sequence.find(substring, i + 1)
+                listindex = []
+                while j >= 0:
+                    listindex.append(j)
+                    j = sequence.find(substring, j+1)
+
+                if len(listindex) > 0:
+                    repeats[substring] = len(listindex) + 1
+
+                # SLOW: why orders of magnitude slower than above
+                # count = 1
+                # for j in range(i + 1, len(sequence) - (length - 1)):
+                #     if sequence[j:j+length] == substring:
+                #         count += 1
+                # if count > 1:
+                #     repeats[substring] = count
         return repeats
 
 

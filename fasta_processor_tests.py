@@ -39,6 +39,9 @@ class TestMyFastaProcesssor(unittest.TestCase):
         self.failUnlessEqual(self.the_processor.open_reading_frames("GGGATGAAAAAATAGTTTTTTATGGGGGGGGGGTAAAAAA", 2), [])
         self.failUnlessEqual(self.the_processor.open_reading_frames("TAATAGTGA"), [])
 
+    def test_start_codon_not_overridden_by_second_start_codon(self):
+        self.failUnlessEqual(self.the_processor.open_reading_frames("ATGATGGGGTAG", 0), ['ATGATGGGGTAG'])
+
     def test_repeats(self):
         self.failUnlessEqual(self.the_processor.repeats("aabbbaaaa", 2), {'aa': 4, 'bb': 2})
 
